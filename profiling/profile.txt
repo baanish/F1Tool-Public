@@ -1,0 +1,46 @@
+Wed Jun 15 23:01:24 2022    F1Tool/profile.txt
+
+         475550567 function calls (363966785 primitive calls) in 257.434 seconds
+
+   Ordered by: internal time
+   List reduced from 585 to 8 due to restriction <'models'>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     4688    0.062    0.000    0.088    0.000 models.py:157(tick_temps)
+     1681    0.006    0.000    0.008    0.000 models.py:146(tick_fuel_and_ers)
+        2    0.005    0.003    0.006    0.003 models.py:62(lap_completed)
+      269    0.001    0.000    0.001    0.000 models.py:154(tick_tyre)
+        1    0.000    0.000    0.000    0.000 models.py:1(PlayerCar)
+        1    0.000    0.000    0.000    0.000 models.py:52(__init__)
+        1    0.000    0.000    0.000    0.000 models.py:172(set_tyre_pressures)
+        1    0.000    0.000    0.000    0.000 models.py:1(<module>)
+
+
+Wed Jun 15 23:01:24 2022    F1Tool/profile.txt
+
+         475550567 function calls (363966785 primitive calls) in 257.434 seconds
+
+   Ordered by: internal time
+   List reduced from 585 to 5 due to restriction <'helpers'>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.001    0.001 helpers.py:2(print_averages)
+        1    0.000    0.000    0.000    0.000 helpers.py:134(get_ers_strat)
+        2    0.000    0.000    0.000    0.000 helpers.py:97(get_tyre_compound)
+        1    0.000    0.000    0.000    0.000 helpers.py:1(<module>)
+        2    0.000    0.000    0.000    0.000 helpers.py:118(get_visual_tyre_compound)
+
+
+Wed Jun 15 23:01:24 2022    F1Tool/profile.txt
+
+         475550567 function calls (363966785 primitive calls) in 257.434 seconds
+
+   Ordered by: internal time
+   List reduced from 585 to 3 due to restriction <'main'>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    1.610    1.610  255.101  255.101 main.py:61(listen_to_udp)
+        2    0.000    0.000  257.463  128.732 main.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 threading.py:793(_maintain_shutdown_locks)
+
+

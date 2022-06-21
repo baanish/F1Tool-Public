@@ -1,0 +1,39 @@
+Average fuel consumption: 1.87kg/lap, Fuel Delta from MFD:  +0.02
+
+Suggested fuel for the race is 107.59Kg including 1Kg extra for margin of error
+Your average ers style was using 0.64Mj of ers a lap or using 16.0% of the battery per lap
+You can sustain this usage from 100% battery for 6.25laps
+You should try this for the ERS usage(Assuming max usage 1st lap and keeping about 30% in reserve for defending/attacking):
+Where F = first, D = Deploy, C = charge
+FDDCDDDCDDDCDDDDCDDDCDDDDCDDDCDDDCDDDDCDDDCDDDCDDDDCDDDD
+
+You completed your laps on the C4 soft 
+Your most worn tyre is the Front Left
+Average tyre wear:
+Rear Left: 2.83% per lap
+Rear Right: 2.61% per lap
+Front Left: 2.99% per lap
+Front Right: 2.45% per lap
+
+Your tyre temperature information is:
+Rear Left
+Average: Surface Temp: 94.71C Carcass/Inner Temp: 96.47C
+Minimum: Surface Temp: 79C Carcass/Inner Temp: 93C
+Maximum: Surface Temp: 121C Carcass/Inner Temp: 100C
+
+Rear Right
+Average: Surface Temp: 92.53C Carcass/Inner Temp: 93.96C
+Minimum: Surface Temp: 79C Carcass/Inner Temp: 89C
+Maximum: Surface Temp: 120C Carcass/Inner Temp: 99C
+
+Front Left
+Average: Surface Temp: 93.49C Carcass/Inner Temp: 95.76C
+Minimum: Surface Temp: 75C Carcass/Inner Temp: 93C
+Maximum: Surface Temp: 125C Carcass/Inner Temp: 99C
+
+Front Right
+Average: Surface Temp: 89.85C Carcass/Inner Temp: 91.83C
+Minimum: Surface Temp: 77C Carcass/Inner Temp: 89C
+Maximum: Surface Temp: 119C Carcass/Inner Temp: 96C
+
+That's all for now.
