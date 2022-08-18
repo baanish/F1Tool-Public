@@ -69,7 +69,7 @@ class PlayerCar:
         This function is called when a lap is completed. It updates the data for the lap by populating the per lap arrays
         it also calculates the averages if the number of laps is reached. It then calls the print_averages function to print the averages
         """
-        
+        from F1Tool.src.helpers import play_audio
         # increment the number of completed laps
         self.completed_laps += 1
         
@@ -86,7 +86,7 @@ class PlayerCar:
         
         # calculate averages if number of laps is reached
         if self.completed_laps == self.number_of_laps:
-            
+            play_audio(".\\sounds\\calculating_averages.mp3")   
             rl_average_tyre_wear, rr_average_tyre_wear, fl_average_tyre_wear, fr_average_tyre_wear = 0, 0, 0, 0
             
             # sum up the averages for fuel and tyres
@@ -160,10 +160,10 @@ class PlayerCar:
                 self.average_ers_duration = 4.0/(self.average_ers_deployed - self.average_ers_harvested)
             else:
                 self.average_ers_duration = 0.0
-            
             # call the helper function to print the averages
-            from helpers import print_averages
+            from F1Tool.src.helpers import print_averages
             print_averages(self)
+        play_audio(".\\sounds\\lap_completed.mp3")
 
     def tick_fuel_and_ers(self, fuel_weight, fuel_mfd, ers_current, ers_deployed, ers_harvested):
         """ This function is called to update the fuel and ERS status

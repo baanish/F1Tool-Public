@@ -1,3 +1,7 @@
+import imp
+import playsound
+from threading import Thread
+
 # method to print the averages in a nicer format along with the suggested tyre usage
 def print_averages(player_car):
     """ This method prints the averages of the car in a nicer format, along with suggested fuel weight, ERS strategy, and tyre stats
@@ -8,98 +12,75 @@ def print_averages(player_car):
     strategy_file = open("strategy.txt", "w")
     
     # Write the average fuel consumption
-    strategy_file.write("Average fuel consumption: " +
-                        str(round(player_car.average_fuel_consumption_weight, 2)) +
-                        "kg/lap, Fuel Delta from MFD: ")
+    strategy_file.write(f"Average fuel consumption: {round(player_car.average_fuel_consumption_weight, 2)}kg/lap, Fuel Delta from MFD: ")
     if player_car.average_fuel_consumption_mfd - 1 > 0:
-        strategy_file.write(
-            " +" + str(round(player_car.average_fuel_consumption_mfd - 1, 2)) + "\n\n")
+        strategy_file.write(f" +{round(player_car.average_fuel_consumption_mfd - 1, 2)}\n\n")
     else:
-        strategy_file.write(
-            str(round(player_car.average_fuel_consumption_mfd - 1, 2)) + "\n\n")
+        strategy_file.write(f"{round(player_car.average_fuel_consumption_mfd - 1, 2)}\n\n")
     # Write the suggested fuel weight for the race
-    strategy_file.write("Suggested fuel for the race is " +
-                        str((
-                            player_car.average_fuel_consumption_weight * player_car.number_of_race_laps) + 1) + "Kg including 1Kg extra for margin of error\n")
+    strategy_file.write(f"Suggested fuel for the race is {(player_car.average_fuel_consumption_weight * player_car.number_of_race_laps) + 1}Kg including 1Kg extra for margin of error\n")
 
     # Write the ERS stats
-    strategy_file.write("Your average ers style was ")
+    strategy_file.write(f"Your average ers style was ")
     if player_car.average_ers_deployed - player_car.average_ers_harvested > 0:
-        strategy_file.write("using " + str(round(player_car.average_ers_deployed - player_car.average_ers_harvested, 2)) + "Mj of ers a lap or using " + str(round((player_car.average_ers_deployed - player_car.average_ers_harvested)*100/4,2)) + "% of the battery per lap\n")
-        strategy_file.write("You can sustain this usage from 100% battery for " + str(round(player_car.average_ers_duration, 2)) + "laps\n")
-        strategy_file.write("You should try this for the ERS usage(Assuming max usage 1st lap and keeping about 30% in reserve for defending/attacking):\nWhere F = first, D = Deploy, C = charge\n" + get_ers_strat(player_car) + "\n\n")
+        strategy_file.write(f"using {round(player_car.average_ers_deployed - player_car.average_ers_harvested, 2)}Mj of ers a lap or using {round((player_car.average_ers_deployed - player_car.average_ers_harvested)*100/4,2)}% of the battery per lap\n")
+        strategy_file.write(f"You can sustain this usage from 100% battery for {round(player_car.average_ers_duration, 2)}laps\n")
+        strategy_file.write(f"You should try this for the ERS usage(Assuming max usage 1st lap and keeping about 30% in reserve for defending/attacking):\nWhere F = first, D = Deploy, C = charge\n{get_ers_strat(player_car)}\n\n")
 
     elif player_car.average_ers_deployed - player_car.average_ers_harvested < 0:
-        strategy_file.write("harvesting " + str(round(player_car.average_ers_harvested - player_car.average_ers_deployed, 2)) + "Mj of ers a lap or charging " + str(round((player_car.average_ers_harvested - player_car.average_ers_deployed)*100/4,2)) + "% per lap\n")
-        strategy_file.write("Your battery will be fully charged from empty in " + str(round(4.0/(player_car.average_ers_harvested - player_car.average_ers_deployed),2)) + "laps\n\n")
+        strategy_file.write(f"harvesting {round(player_car.average_ers_harvested - player_car.average_ers_deployed, 2)}Mj of ers a lap or charging {round((player_car.average_ers_harvested - player_car.average_ers_deployed)*100/4,2)}% per lap\n")
+        strategy_file.write(f"Your battery will be fully charged from empty in {round(4.0/(player_car.average_ers_harvested - player_car.average_ers_deployed),2)}laps\n\n")
     else:
-        strategy_file.write("perfectly balanced as everything should be\n\n")
+        strategy_file.write(f"perfectly balanced as everything should be\n\n")
 
     # Write the tyre stats and the most worn tyre
     if get_tyre_compound(player_car.tyre_compound) != 'Invalid tyre compound' and get_visual_tyre_compound(
             player_car.tyre_compound_visual) != 'Invalid tyre compound':
-        strategy_file.write("You completed your laps on the " + get_tyre_compound(
-            player_car.tyre_compound) + " " + get_visual_tyre_compound(player_car.tyre_compound_visual) + " \n")
-        strategy_file.write("Your most worn tyre is the ")
+        strategy_file.write(f"You completed your laps on the {get_tyre_compound(player_car.tyre_compound)} {get_visual_tyre_compound(player_car.tyre_compound_visual)} \n")
+        strategy_file.write(f"Your most worn tyre is the ")
         max_tyre_index = player_car.average_tyre_wear.index(
             max(player_car.average_tyre_wear))
         if max_tyre_index == 0:
-            strategy_file.write("Rear Left\n")
+            strategy_file.write(f"Rear Left\n")
         elif max_tyre_index == 2:
-            strategy_file.write("Front Left\n")
+            strategy_file.write(f"Front Left\n")
         elif max_tyre_index == 1:
-            strategy_file.write("Rear Right\n")
+            strategy_file.write(f"Rear Right\n")
         elif max_tyre_index == 3:
-            strategy_file.write("Front Right\n")
+            strategy_file.write(f"Front Right\n")
     else:
-        strategy_file.write(
-            "Unfortunately your tyre compound was not detected\n")
+        strategy_file.write(f"Unfortunately your tyre compound was not detected\n")
 
     # write the average tyre wear with two decimal places
-    strategy_file.write("Average tyre wear:\n")
-    strategy_file.write(
-        "Rear Left: " + str(round(player_car.average_tyre_wear[0], 2)) + "% per lap\n")
-    strategy_file.write(
-        "Rear Right: " + str(round(player_car.average_tyre_wear[1], 2)) + "% per lap\n")
-    strategy_file.write(
-        "Front Left: " + str(round(player_car.average_tyre_wear[2], 2)) + "% per lap\n")
-    strategy_file.write(
-        "Front Right: " + str(round(player_car.average_tyre_wear[3], 2)) + "% per lap\n\n")
+    strategy_file.write(f"Average tyre wear:\n")
+    strategy_file.write(f"Rear Left: {round(player_car.average_tyre_wear[0], 2)}% per lap\n")
+    strategy_file.write(f"Rear Right: {round(player_car.average_tyre_wear[1], 2)}% per lap\n")
+    strategy_file.write(f"Front Left: {round(player_car.average_tyre_wear[2], 2)}% per lap\n")
+    strategy_file.write(f"Front Right: {round(player_car.average_tyre_wear[3], 2)}% per lap\n\n")
 
     # write the average tyre temperatures with two decimal places, along with the min and max temperatures
-    strategy_file.write("Your tyre temperature information is:\n")
-    strategy_file.write(
-        "Rear Left\nAverage: Surface Temp: " + str(round(player_car.average_tyre_surface_temperature[0], 2)) + "C Carcass/Inner Temp: " + str(round(player_car.average_tyre_carcass_temperature[0], 2)) + "C")
-    strategy_file.write(
-        "\nMinimum: Surface Temp: " + str(round(player_car.min_tyre_temps_surface[0], 2)) + "C Carcass/Inner Temp: " + str(round(player_car.min_tyre_temps_carcass[0], 2)) + "C")
-    strategy_file.write(
-        "\nMaximum: Surface Temp: " + str(round(player_car.max_tyre_temps_surface[0], 2)) + "C Carcass/Inner Temp: " + str(round(player_car.max_tyre_temps_carcass[0], 2)) + "C\n\n")
+    strategy_file.write(f"Your tyre temperature information is:\n")
+    strategy_file.write(f"Rear Left\nAverage: Surface Temp: {round(player_car.average_tyre_surface_temperature[0], 2)}C Carcass/Inner Temp: {round(player_car.average_tyre_carcass_temperature[0], 2)}C")
+    strategy_file.write(f"\nMinimum: Surface Temp: {round(player_car.min_tyre_temps_surface[0], 2)}C Carcass/Inner Temp: {round(player_car.min_tyre_temps_carcass[0], 2)}C")
+    strategy_file.write(f"\nMaximum: Surface Temp: {round(player_car.max_tyre_temps_surface[0], 2)}C Carcass/Inner Temp: {round(player_car.max_tyre_temps_carcass[0], 2)}C\n\n")
 
-    strategy_file.write(
-        "Rear Right\nAverage: Surface Temp: " + str(round(player_car.average_tyre_surface_temperature[1], 2)) + "C Carcass/Inner Temp: " + str(round(player_car.average_tyre_carcass_temperature[1], 2)) + "C")
-    strategy_file.write(
-        "\nMinimum: Surface Temp: " + str(round(player_car.min_tyre_temps_surface[1], 2)) + "C Carcass/Inner Temp: " + str(round(player_car.min_tyre_temps_carcass[1], 2)) + "C")
-    strategy_file.write(
-        "\nMaximum: Surface Temp: " + str(round(player_car.max_tyre_temps_surface[1], 2)) + "C Carcass/Inner Temp: " + str(round(player_car.max_tyre_temps_carcass[1], 2)) + "C\n\n")
+    strategy_file.write(f"Rear Right\nAverage: Surface Temp: {round(player_car.average_tyre_surface_temperature[1], 2)}C Carcass/Inner Temp: {round(player_car.average_tyre_carcass_temperature[1], 2)}C")
+    strategy_file.write(f"\nMinimum: Surface Temp: {round(player_car.min_tyre_temps_surface[1], 2)}C Carcass/Inner Temp: {round(player_car.min_tyre_temps_carcass[1], 2)}C")
+    strategy_file.write(f"\nMaximum: Surface Temp: {round(player_car.max_tyre_temps_surface[1], 2)}C Carcass/Inner Temp: {round(player_car.max_tyre_temps_carcass[1], 2)}C\n\n")
 
-    strategy_file.write(
-        "Front Left\nAverage: Surface Temp: " + str(round(player_car.average_tyre_surface_temperature[2], 2)) + "C Carcass/Inner Temp: " + str(round(player_car.average_tyre_carcass_temperature[2], 2)) + "C")
-    strategy_file.write(
-        "\nMinimum: Surface Temp: " + str(round(player_car.min_tyre_temps_surface[2], 2)) + "C Carcass/Inner Temp: " + str(round(player_car.min_tyre_temps_carcass[2], 2)) + "C")
-    strategy_file.write(
-        "\nMaximum: Surface Temp: " + str(round(player_car.max_tyre_temps_surface[2], 2)) + "C Carcass/Inner Temp: " + str(round(player_car.max_tyre_temps_carcass[2], 2)) + "C\n\n")
+    strategy_file.write(f"Front Left\nAverage: Surface Temp: {round(player_car.average_tyre_surface_temperature[2], 2)}C Carcass/Inner Temp: {round(player_car.average_tyre_carcass_temperature[2], 2)}C")
+    strategy_file.write(f"\nMinimum: Surface Temp: {round(player_car.min_tyre_temps_surface[2], 2)}C Carcass/Inner Temp: {round(player_car.min_tyre_temps_carcass[2], 2)}C")
+    strategy_file.write(f"\nMaximum: Surface Temp: {round(player_car.max_tyre_temps_surface[2], 2)}C Carcass/Inner Temp: {round(player_car.max_tyre_temps_carcass[2], 2)}C\n\n")
 
-    strategy_file.write(
-        "Front Right\nAverage: Surface Temp: " + str(round(player_car.average_tyre_surface_temperature[3], 2)) + "C Carcass/Inner Temp: " + str(round(player_car.average_tyre_carcass_temperature[3], 2)) + "C")
-    strategy_file.write(
-        "\nMinimum: Surface Temp: " + str(round(player_car.min_tyre_temps_surface[3], 2)) + "C Carcass/Inner Temp: " + str(round(player_car.min_tyre_temps_carcass[3], 2)) + "C")
-    strategy_file.write(
-        "\nMaximum: Surface Temp: " + str(round(player_car.max_tyre_temps_surface[3], 2)) + "C Carcass/Inner Temp: " + str(round(player_car.max_tyre_temps_carcass[3], 2)) + "C\n\n")
+    strategy_file.write(f"Front Right\nAverage: Surface Temp: {round(player_car.average_tyre_surface_temperature[3], 2)}C Carcass/Inner Temp: {round(player_car.average_tyre_carcass_temperature[3], 2)}C")
+    strategy_file.write(f"\nMinimum: Surface Temp: {round(player_car.min_tyre_temps_surface[3], 2)}C Carcass/Inner Temp: {round(player_car.min_tyre_temps_carcass[3], 2)}C")
+    strategy_file.write(f"\nMaximum: Surface Temp: {round(player_car.max_tyre_temps_surface[3], 2)}C Carcass/Inner Temp: {round(player_car.max_tyre_temps_carcass[3], 2)}C\n\n")
 
-    strategy_file.write("That's all for now.")
+    strategy_file.write(f"That's all for now.")
     strategy_file.close()
     print("Find the results in the strategy.txt file")
-    exit()
+    import F1Tool.src.main
+    F1Tool.src.main.loop = False
 
 
 def get_tyre_compound(tyre_compound):
@@ -186,3 +167,17 @@ def get_ers_strat(player_car):
             ret += "C"
             current_battery += min(4.0, player_car.average_ers_harvested*1.2 - (player_car.average_ers_deployed*0.2))
     return ret
+
+# https://stackoverflow.com/a/69220119
+def play_audio(audiopath, is_quick=False):
+    """
+    Play sound file in a separate thread
+    only plays if is_quick is False
+    (don't block current thread)
+    """
+    if not is_quick:
+        def play_thread_function():
+            playsound.playsound(audiopath)
+
+        play_thread = Thread(target=play_thread_function)
+        play_thread.start()
